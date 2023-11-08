@@ -56,7 +56,7 @@ def filterImage(inImage, kernel):
 
     # Creamos una imagen de salida inicialmente llena de ceros
     out_x, out_y = im_width - (kern_width - 1), im_height - (kern_height - 1)
-    outImage = np.zeros((out_y, out_x), dtype=np.uint8)
+    outImage = np.zeros((out_y, out_x), dtype=np.int32)
 
     # Realizamos la convolución
     for y in range(out_y):
@@ -71,8 +71,7 @@ def filterImage(inImage, kernel):
                     # Comprobamos que las coordenadas estén dentro de los límites de la imagen
                     if img_x >= 0 and img_x < im_width and img_y >= 0 and img_y < im_height:
                         px += inImage[img_y, img_x] * kernel[ky, kx]
-            outImage[y, x] = np.uint8(px)
-
+            outImage[y, x] = np.int32(px)
 
     return outImage
 
