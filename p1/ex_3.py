@@ -109,6 +109,11 @@ def invert(object, shape):
     out = out % 2
     return out
 
+def coherent_SE(objSE, bgSE):
+    res = np.array(objSE, dtype=np.uint8) * np.array(bgSE, dtype=np.uint8)
+    coherent = not res.any()
+    return coherent
+
 def hit_or_miss(inImage, objSE, bgSE, center=[]):
     start_t = time()
     assert(np.shape(objSE)==np.shape(bgSE)), "Las dimensiones de los EE no coinciden"
@@ -121,18 +126,12 @@ def hit_or_miss(inImage, objSE, bgSE, center=[]):
     else:
         SE_width, SE_height = np.shape(objSE)
 
-    incoherentes = False
     # Comprobar incoherencia
-    assert(incoherentes == False), "Elementos estructurantes incoherentes"
-    
-    # assert(for i,j in range(SE_height),range(SE_width): not (objSE[i][j]==1 and bgSE[i][j]==1)), "Elementos estructurantes incoherentes"
-    
+    assert(coherent_SE(objSE, bgSE)), "Elementos estructurantes incoherentes"
     
     n,m = np.shape(inImage)
     outImage = np.zeros(np.shape(inImage), dtype=np.uint)
 
-    # objSE = invert(objSE, (SE_height, SE_width))
-    # bgSE = invert(bgSE, (SE_height, SE_width))
     invImg = invert(inImage, (n, m))
 
     im1 = erode(inImage, objSE, center)
@@ -210,7 +209,7 @@ def hit_or_miss(inImage, objSE, bgSE, center=[]):
 # # print(out)
 
 
-# # Ejemplo opencv
+# Ejemplo opencv
 # inImage = [
 #     [0, 0, 0, 0, 0, 0, 0, 0],
 #     [0, 1, 1, 1, 0, 0, 0, 1],
