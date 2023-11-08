@@ -157,3 +157,21 @@ def cells(option):
             img = np.where(img>100,1,0)
             show_results(img, out, global_title='Comparación', text1='Resultado esperado', text2='Resultado obtenido')
             
+def hit_or_miss_test():
+    img = np.uint8(cv.imread('examples/3/hit-or-miss/image.png', cv.IMREAD_GRAYSCALE))
+    img = np.where(img>100,1,0)
+    img = invert(img, np.shape(img))
+
+    hit = [
+        [0,0,0],
+        [0,1,0],
+        [0,0,0]]
+    miss = [
+        [1,1,1],
+        [1,0,1],
+        [1,1,1]]
+    out = hit_or_miss(img, hit, miss, (1,1))
+
+    show_results(img, out)
+
+hit_or_miss_test()
