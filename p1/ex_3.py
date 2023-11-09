@@ -1,8 +1,4 @@
-import numpy as np
-import cv2 as cv
-from time import time
-
-from matplotlib import pyplot as plt
+from base import *
 
 
 def calcWhiteCoords(SE, shape, center): # Calcula las coordenas en función del centro del SE con los valores a 1
