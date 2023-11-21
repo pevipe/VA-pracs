@@ -12,27 +12,15 @@ def filterImage(inImage, kernel):
     else:
         kern_height, kern_width = np.shape(kernel)
 
-    kern_center_x = kern_width // 2
-    kern_center_y = kern_height // 2
-
     # Creamos una imagen de salida inicialmente llena de ceros
     out_x, out_y = im_width - (kern_width - 1), im_height - (kern_height - 1)
-    outImage = np.zeros((out_y, out_x), dtype=np.int32)
+    outImage = np.zeros((out_y, out_x), dtype=np.float32)
 
     # Realizamos la convolución
     for y in range(out_y):
         for x in range(out_x):
-            px = 0
-            for ky in range(kern_height):
-                for kx in range(kern_width):
-                    # Coordenadas en la imagen de entrada
-                    img_x = x + kx - kern_center_x
-                    img_y = y + ky - kern_center_y
-
-                    # Comprobamos que las coordenadas estén dentro de los límites de la imagen
-                    if img_x >= 0 and img_x < im_width and img_y >= 0 and img_y < im_height:
-                        px += inImage[img_y, img_x] * kernel[ky, kx]
-            outImage[y, x] = np.int32(px)
+            window = inImage[y:y+kern_height, x:x+kern_width]
+            outImage[y,x] = np.sum(window*kernel)
 
     return outImage
 
@@ -77,5 +65,4 @@ def medianFilter(inImage, filterSize):
             outImage[y, x] = px
 
     return outImage
-
 
