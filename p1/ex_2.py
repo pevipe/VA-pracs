@@ -1,5 +1,6 @@
 from base import *
 
+
 def filterImage(inImage, kernel):
     im_height, im_width = np.shape(inImage)
 
@@ -19,7 +20,7 @@ def filterImage(inImage, kernel):
     for y in range(out_y):
         for x in range(out_x):
             window = inImage[y:y+kern_height, x:x+kern_width]
-            outImage[y,x] = np.sum(window*kernel)
+            outImage[y, x] = np.sum(window*kernel)
 
     return outImage
 
@@ -39,7 +40,7 @@ def gaussKernel1D(sigma):
 def gaussianFilter(inImage, sigma):
     kernel = gaussKernel1D(sigma)
     tmp = filterImage(inImage, kernel)
-    outImage = filterImage(tmp, kernel.reshape(-1,1))
+    outImage = filterImage(tmp, kernel.reshape(-1, 1))
     return outImage
 
 

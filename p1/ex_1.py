@@ -16,8 +16,9 @@ def adjustIntensity(inImage, inRange=[], outRange=[0, 1]):
 
     return image
 
+
 def equalizeIntensity (inImage, nBins=256):
-    histograma = cv.calcHist([inImage], [0], None, [256], [0, 1]) # Sobre 256
+    histograma = cv.calcHist([inImage], [0], None, [256], [0, 1])  # Sobre 256
     n,m = np.shape(inImage)
 
     hist_acumulado = np.cumsum(histograma)
