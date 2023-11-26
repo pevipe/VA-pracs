@@ -1,7 +1,6 @@
 from base import *
 
 
-
 def adjustIntensity(inImage, inRange=[], outRange=[0, 1]):
 
     if (inRange==[]):
