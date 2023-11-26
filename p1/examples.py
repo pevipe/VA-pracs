@@ -41,6 +41,11 @@ def convol_test():
     outImage = filterImage(inImg, filtro)
     print(np.uint8(outImage))
 
+def gaussian_filter_test():
+    img = np.uint8(cv.imread('examples/2/4.jpg', cv.IMREAD_GRAYSCALE))
+    outImage = gaussianFilter(img, 1.4)
+    show_results(img, outImage)
+
 
 # TODO: gaussianFilter, medianFilter
 # Ejemplo ruido
@@ -255,9 +260,17 @@ def log_test():
 
     show_results(img, res)
 
+
 def canny_test():
     img = np.uint8(cv.imread('examples/4/canny/img.png', cv.IMREAD_GRAYSCALE))
-    res = (edgeCanny(img, 0.7, 5, 30))
+    res = (edgeCanny(img, .7, 5, 30))
 
     show_results(img, res)
 
+
+def pruebas_imagenes():
+    img = np.uint8(cv.imread('examples/imagenes_de_prueba/circles.png', cv.IMREAD_GRAYSCALE))
+    res = (edgeCanny(img, 3, 3, 5))
+    show_results(img, res)
+
+gaussian_filter_test()
