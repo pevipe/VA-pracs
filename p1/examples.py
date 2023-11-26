@@ -174,6 +174,7 @@ def lines(option):
             img = np.where(img>100,1,0)
             show_results(img, out, global_title='Comparación', text1='Resultado esperado', text2='Resultado obtenido')
 
+
 # Example 5: cells
 def cells(option):
     img = np.uint8(cv.imread('examples/3/opening/cells.png', cv.IMREAD_GRAYSCALE))
@@ -211,7 +212,8 @@ def cells(option):
             img = np.uint8(cv.imread('examples/3/opening/cells_result_7.png', cv.IMREAD_GRAYSCALE))
             img = np.where(img>100,1,0)
             show_results(img, out, global_title='Comparación', text1='Resultado esperado', text2='Resultado obtenido')
-            
+
+
 def hit_or_miss_test():
     img = np.uint8(cv.imread('examples/3/hit-or-miss/image.png', cv.IMREAD_GRAYSCALE))
     img = np.where(img>100,1,0)
@@ -253,4 +255,9 @@ def log_test():
 
     show_results(img, res)
 
-log_test()
+def canny_test():
+    img = np.uint8(cv.imread('examples/4/canny/img.png', cv.IMREAD_GRAYSCALE))
+    res = (edgeCanny(img, 0.7, 5, 30))
+
+    show_results(img, res)
+
