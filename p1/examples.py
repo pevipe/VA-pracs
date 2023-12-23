@@ -8,16 +8,17 @@ from ex_4 import *
 # Exercise 1 - adjustIntensity & equalizeIntensity #
 ####################################################
 def equalize_test(do_plot=True):
-    inImg = np.float32(cv.imread('examples/1/moon.png', cv.IMREAD_GRAYSCALE)/255)
+    inImg = np.float32(cv.imread('examples/imagenes_de_prueba/grays.png', cv.IMREAD_GRAYSCALE)/255)
     outImage = equalizeIntensity(inImg)
     print(outImage)
     if (do_plot):
         plot_2_with_hist(inImg, outImage)
 
 def adjust_test(do_plot=True):
-    inImg = np.float32(cv.imread('examples/1/bn_1.jpg', cv.IMREAD_GRAYSCALE)/255)
+    inImg = np.float32(cv.imread('examples/imagenes_de_prueba/grays.png', cv.IMREAD_GRAYSCALE)/255)
     outImage = adjustIntensity(inImg, outRange=[0.2,0.9])
     plot_2_with_hist(inImg, outImage)
+
 
 
 
@@ -42,9 +43,15 @@ def convol_test():
     print(np.uint8(outImage))
 
 def gaussian_filter_test():
-    img = np.uint8(cv.imread('examples/2/4.jpg', cv.IMREAD_GRAYSCALE))
-    outImage = gaussianFilter(img, 1.4)
+    img = np.uint8(cv.imread('examples/ruido_gaussiano.jpg', cv.IMREAD_GRAYSCALE))
+    outImage = gaussianFilter(img, 2.4)
     show_results(img, outImage)
+
+def median_test():
+    img = np.uint8(cv.imread('examples/ruido_gaussiano.jpg', cv.IMREAD_GRAYSCALE))
+    outImage = medianFilter(img, 9)
+    show_results(img, outImage)
+
 
 
 # TODO: gaussianFilter, medianFilter
@@ -273,4 +280,25 @@ def pruebas_imagenes():
     res = (edgeCanny(img, 3, 3, 5))
     show_results(img, res)
 
-gaussian_filter_test()
+
+
+
+def defensa():
+    img = np.uint8(cv.imread('examples/imagenes_de_prueba/grid.png', cv.IMREAD_GRAYSCALE))
+    res = img # Aplicar función
+    show_results(img, res, text1='Original', text2='Modificada')
+
+def ee():
+    ee = [[0,1,0],[1,1,1], [0,1,0]]
+    bg = [[1,0,1],[0,0,0], [1,0,1]]
+    img = np.uint8(cv.imread('examples/imagenes_de_prueba/morph.png', cv.IMREAD_GRAYSCALE))
+    img = np.where(img > 100, 1, 0)
+    res = hit_or_miss(img, ee, bg)
+    show_results(img, res, text1='Original', text2='Modificada')
+
+def test_log():
+    img = np.uint8(cv.imread('examples/imagenes_de_prueba/circles.png', cv.IMREAD_GRAYSCALE))
+    res = edgeCanny(img, 0.8, 0.05, 0.2)
+    show_results(img, res, text1='Original', text2='Modificada')
+
+test_log()
