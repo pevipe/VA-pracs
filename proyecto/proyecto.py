@@ -111,3 +111,13 @@ def detect_eye(image):
     cv.waitKey(0)
 
 detect_eye()
+
+def segment_test_images():
+    # Get images from directory
+    image_list = get_images('test_images')
+
+    for image in image_list:
+        detect_eye(image)
+
+
+segment_test_images()
