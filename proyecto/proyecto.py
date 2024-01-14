@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 import cv2 as cv
 import os
 import numpy as np
@@ -26,7 +24,7 @@ def show_results(img1, img2, global_title='Test', text1='Original', text2='Modif
     plt.show()
 
 
-def get_pupil(in_image):
+def get_pupil(in_image: np.ndarray) -> np.ndarray:
     height, width = np.shape(in_image)
     blur = cv.medianBlur(in_image, 5)
     pupils = cv.HoughCircles(blur, cv.HOUGH_GRADIENT, 1, width / 2, param1=120, param2=30, minRadius=height // 14,
@@ -34,7 +32,7 @@ def get_pupil(in_image):
     return pupils
 
 
-def get_iris(in_image):
+def get_iris(in_image: np.ndarray) -> np.ndarray:
     height, width = np.shape(in_image)
     blur = cv.medianBlur(in_image, 5)
     iris = cv.HoughCircles(blur, cv.HOUGH_GRADIENT, 1, width / 1.1, param1=100, param2=2.8, minRadius=height // 8,
@@ -50,19 +48,18 @@ def get_images(directory: str):
     return images
 
 
-def fill_circle(image, circle, scale):
+def fill_circle(image: np.ndarray, circle: np.ndarray, scale: float = 1.0) -> np.ndarray:
     out_image = np.zeros_like(image)
 
-    center = (circle[0], circle[1])
-    radius = round(circle[2] * scale)
+    center = (int(circle[0]), (circle[1]))
+    radius = round(float(circle[2]) * scale)
     # fill
     cv.circle(out_image, center, radius, (255, 255, 255), -1)
 
     return out_image / 255
 
 
-
-def get_artifacts(in_image, pupil, iris):
+def get_artifacts(in_image: np.ndarray, pupil: np.ndarray, iris: np.ndarray):
     # Máscaras binarias de iris y pupila
     pupil_circle = fill_circle(in_image, pupil, 0.85)
     iris_circle = fill_circle(in_image, iris, 0.95) - fill_circle(in_image, pupil, 1.05)
@@ -91,11 +88,12 @@ def get_artifacts(in_image, pupil, iris):
     # Aplicar ecualización
     eq1 = cv.equalizeHist(blur[indices_to_keep_iris])
     for i in range(len(eq1)):
-        # Hacer media ponderada entre la imagen ecualizada y la suavizada TODO: en función de la media?
-        s = (eq1[i][0].astype(np.uint16)*2 + blur[indices_to_keep_iris[0][i], indices_to_keep_iris[1][i]].astype(np.uint16))
+        # Hacer media ponderada entre la imagen ecualizada y la suavizada
+        s = (eq1[i][0].astype(np.uint16) * 2 + blur[indices_to_keep_iris[0][i], indices_to_keep_iris[1][i]].astype(
+            np.uint16))
         eq1[i][0] = s // 3
     mean_iris = np.mean(eq1)
-    white_threshold = mean_iris + (255-mean_iris) * .58
+    white_threshold = mean_iris + (255 - mean_iris) * .58
     black_threshold = mean_iris * .3
 
     # Aplicar thresholds superior e inferior (se consideran artefactos los que están por debajo del primero y por
@@ -109,17 +107,17 @@ def get_artifacts(in_image, pupil, iris):
     for i in range(len(indices_to_keep_iris[0])):
         art_iris_mat[indices_to_keep_iris[0][i], indices_to_keep_iris[1][i]] = art_iris[i][0]
 
-    return binary_pupil_artifacts, binary_iris_artifacts
     return art_pupila, art_iris_mat
 
 
-def detect_eye(image):
+def segment_eye(image: np.ndarray):
     # Convert image to color for representation
     image_color = cv.cvtColor(image, cv.COLOR_GRAY2RGB)
 
     # Get parameters for pupil and iris
     pupil = get_pupil(image)
     iris = get_iris(image)
+    pupil_artifacts, iris_artifacts = None, None
 
     # Draw pupil's circle
     if pupil is not None:
@@ -147,24 +145,31 @@ def detect_eye(image):
         iris_artifacts_coordinates = np.nonzero(iris_artifacts)
 
         # Draw the artifacts in the image
-        image_color[pupil_artifacts_coordinates] = [0, 0, 255]      # Pupil's artifacts in red
-        image_color[iris_artifacts_coordinates] = [255, 255, 0]     # Iris' artifacts in blue
         image_color[pupil_artifacts_coordinates] = [0, 0, 255]  # Pupil's artifacts in blue
         image_color[iris_artifacts_coordinates] = [255, 255, 0]  # Iris' artifacts in yellow
 
-    # Show image with segmentations
-    # cv.imshow("Detected segmentations", image_color)
-    # cv.waitKey(0)
-    show_results(image, image_color)
+    # Generate Region Of Interest (para esclerótica)
+    height, width = np.shape(image)
+    min_y = max(iris[0][0][1] - iris[0][0][2] - pupil[0][0][2], 0)
+    max_y = min(iris[0][0][1] + iris[0][0][2] + pupil[0][0][2], height - 1)
+    min_x, max_x = 5, width - 1
 
-detect_eye()
+    cv.rectangle(image_color, (min_x, min_y), (max_x, max_y), color=(255, 255, 200))
 
+    show_results(image, image_color, text2="Segmentación de pupila, iris y artefactos")
+
+    # Devolver las máscaras de las segmentaciones
+    return fill_circle(image, pupil[0][0]), fill_circle(image, iris[0][0]), pupil_artifacts, iris_artifacts
+
+
+# Aplica segment_eye a todas las imágenes del directorio test_images
 def segment_test_images():
     # Get images from directory
     image_list = get_images('test_images')
 
     for image in image_list:
-        detect_eye(image)
+        segment_eye(image)
 
 
+# Por defecto ejecuta la segmentación sobre todas las imágenes de prueba
 segment_test_images()
